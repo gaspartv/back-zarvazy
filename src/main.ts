@@ -1,8 +1,38 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { NestFactory } from "@nestjs/core";
+import { Transport } from "@nestjs/microservices";
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from "@nestjs/platform-fastify";
+import { AppModule } from "./app.module";
+import { env } from "./config/env";
+import { Log } from "./config/log";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+    { rawBody: true },
+  );
+
+  app.enableCors({
+    origin: "*",
+  });
+
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: [env.RABBITMQ_URL],
+      queue: env.RABBITMQ_RECEIVED,
+      noAck: false,
+      queueOptions: { durable: true },
+    },
+  });
+
+  await app.startAllMicroservices();
+
+  await app.listen(env.PORT, "0.0.0.0", () => {
+    Log.info(env.PORT.toString(), "StartedPort");
+  });
 }
 bootstrap();

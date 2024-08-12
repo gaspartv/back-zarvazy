@@ -1,10 +1,18 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from "@nestjs/config";
+import { RestModule } from "./common/rest/rest-module";
+import { RabbitmqModule } from "./providers/rabbitmq/rabbitmq-module";
 
-@Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+@RestModule({
+  imports: [
+    RabbitmqModule,
+
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationOptions: { allowUnknown: false },
+    }),
+  ],
+  controllers: [],
+  providers: [],
+  exports: [],
 })
 export class AppModule {}
