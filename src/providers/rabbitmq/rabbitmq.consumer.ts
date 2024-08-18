@@ -5,10 +5,10 @@ import {
   Payload,
   RmqContext,
 } from "@nestjs/microservices";
-import { Provider } from "src/common/enums/provider";
-import { RestConsumer } from "src/common/rest/rest-consumer";
-import { Log } from "src/config/log";
-import { RabbitmqService } from "./rabbitmq-service";
+import { ProviderEnum } from "../../common/enums/provider.enum";
+import { RestConsumer } from "../../common/rest/rest-consumer";
+import { Log } from "../../config/log";
+import { RabbitmqService } from "./rabbitmq.service";
 
 class PayloadReceived {
   key: string;
@@ -29,7 +29,7 @@ export class RabbitMQConsumer {
     context.getChannelRef().ack(context.getMessage());
   }
 
-  @MessagePattern(Provider.MESSAGE)
+  @MessagePattern(ProviderEnum.MESSAGE)
   async message(
     @Ctx() context: RmqContext,
     @Payload() payload: PayloadReceived,
@@ -49,7 +49,7 @@ export class RabbitMQConsumer {
     return;
   }
 
-  @MessagePattern(Provider.STATUS)
+  @MessagePattern(ProviderEnum.STATUS)
   async status(
     @Ctx() context: RmqContext,
     @Payload() payload: PayloadReceived,

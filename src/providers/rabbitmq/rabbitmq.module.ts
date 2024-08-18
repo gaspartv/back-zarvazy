@@ -2,10 +2,10 @@ import {
   Transport,
   ClientsModule as TransportClientsModule,
 } from "@nestjs/microservices";
-import { RestModule } from "src/common/rest/rest-module";
-import { env } from "src/config/env";
-import { RabbitMQConsumer } from "./rabbitmq-consumer";
-import { RabbitmqService } from "./rabbitmq-service";
+import { RestModule } from "../../common/rest/rest-module";
+import { env } from "../../config/env";
+import { RabbitMQConsumer } from "./rabbitmq.consumer";
+import { RabbitmqService } from "./rabbitmq.service";
 
 @RestModule({
   imports: [

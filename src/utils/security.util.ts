@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import { env } from "src/config/env";
+import { env } from "../config/env";
 
 export class Security {
   static encrypt(text: string): string {

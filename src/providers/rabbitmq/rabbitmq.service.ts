@@ -1,8 +1,8 @@
 import { Inject } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
-import { RestService } from "src/common/rest/rest-service";
-import { env } from "src/config/env";
-import { Security } from "src/utils/security";
+import { RestService } from "../../common/rest/rest-service";
+import { env } from "../../config/env";
+import { Security } from "../../utils/security.util";
 
 @RestService()
 export class RabbitmqService {

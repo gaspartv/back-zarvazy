@@ -1,0 +1,406 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// enum MessageSendBy {
+//   CUSTOMER
+//   ATTENDANT
+//   MANAGER
+// }
+
+// enum UserType {
+//   ATTENDANT
+//   MANAGER
+// }
+
+// enum UserPolice {
+//   NORMAL
+//   ADMIN
+//   SUPER
+// }
+
+// enum MessageStatus {
+//   PROCESS
+//   SENT
+//   DELIVERED
+//   READ
+//   ERROR
+//   DELETE
+// }
+
+// enum MessageProvider {
+//   WHATSAPP
+//   INSTAGRAM
+//   MESSENGER
+// }
+
+// enum AddressType {
+//   RESIDENTIAL
+//   COMERCIAL
+//   OTHER
+// }
+
+// enum MessageType {
+//   TEXT
+//   IMAGE
+//   VIDEO
+//   AUDIO
+//   DOCUMENT
+// }
+
+// enum ManagementUserPolice {
+//   NORMAL
+//   ADMIN
+//   SUPER
+// }
+
+model ManagementCompany {
+  id  String @id @default(cuid())
+  utc String // enum UTCEnum
+
+  ParentCompaies  ParentCompany[]
+  ManagementUsers ManagementUser[]
+}
+
+model ManagementUser {
+  id          String  @id @default(cuid())
+  code        String  @db.VarChar(9)
+  createdAt   BigInt
+  updatedAt   BigInt
+  disabledAt  BigInt?
+  lastLoginAt BigInt?
+  type        String  @default("MANAGER") // enum ManagementUserTypeEnum
+  police      String  @default("NORMAL")
+
+  username     String @unique
+  usernameHash String
+
+  email     String @unique
+  emailHash String
+
+  nationalId     String @unique
+  nationalIdHash String
+
+  phoneNumber     String? @unique
+  phoneNumberHash String?
+
+  passwordHash String
+
+  countryCode String
+  birthDate   BigInt?
+  firstName   String
+  lastName    String
+  avatarUri   String?
+  language    String   @default("PT_BR") // enum LanguageEnum
+  darkMode    Boolean  @default(false)
+  dateFormat  String   @default("DD-MM-YYYY HH:mm:ss") // enum DateFormatEnum
+  permissions String[] // enum ManagementUserPermissionEnum
+
+  isVerified           Boolean @default(false) // Para verificar se o usuário confirmou o e-mail ou completou a verificação.
+  verificationToken    String? //Para armazenar tokens de verificação de e-mail ou senha.
+  resetPasswordToken   String? //  Para armazenar tokens de redefinição de senha.
+  lastPasswordChangeAt BigInt? // Para rastrear quando a senha foi alterada pela última vez.
+  twoFactorEnabled     Boolean @default(false) // Para indicar se a autenticação de dois fatores está habilitada.
+
+  ManagementCompany   ManagementCompany @relation(fields: [managementCompanyId], references: [id])
+  managementCompanyId String
+
+  ManagementUserSession ManagementUserSession[]
+}
+
+model ManagementUserSession {
+  id                 String  @id @default(cuid())
+  createdAt          BigInt
+  expiresAt          BigInt
+  revokedAt          BigInt? // Nullable, para quando a sessão não foi revogada
+  ipAddress          String? // Para registrar o endereço IP do qual a sessão foi criada, o que pode ser útil para segurança e auditoria.
+  userAgent          String? // Para armazenar informações sobre o navegador ou dispositivo usado para criar a sessão.
+  lastAccessedAt     BigInt? // Para rastrear a última vez que a sessão foi acessada, o que pode ser útil para expiração de sessão ou logs de atividade.
+  deviceId           String? // Identifica o dispositivo usado para a sessão, o que pode ajudar a rastrear acessos e identificar dispositivos não autorizados.
+  isPersistent       Boolean @default(false) // Indica se a sessão é persistente (por exemplo, "lembrar-me") ou temporária.
+  location           String? // Registra a localização geográfica do usuário, com base no endereço IP ou informações de GPS, se disponível.
+  browserFingerprint String? // Armazena uma impressão digital do navegador para ajudar a identificar e verificar a sessão.
+  sessionSource      String? //  Identifica a origem da sessão, como um aplicativo móvel, site, etc.
+
+  ManagementUser   ManagementUser @relation(fields: [managementUserId], references: [id])
+  managementUserId String
+
+  RefreshToken ManagementRefreshToken[]
+}
+
+model ManagementRefreshToken {
+  id        String  @id @default(cuid())
+  token     String  @unique // Token de refresh único JWT
+  createdAt BigInt // Data e hora da criação do token
+  expiresAt BigInt // Data e hora em que o token expira
+  revokedAt BigInt? // Data e hora em que o token foi revogado (opcional)
+  sessionId String? // ID da sessão associada, se aplicável (opcional)
+  metadata  Json? // Dados adicionais do token em formato JSON (opcional)
+
+  ManagementUserSession   ManagementUserSession @relation(fields: [managementUserSessionId], references: [id])
+  managementUserSessionId String
+}
+
+model ParentCompany {
+  id           String  @id @default(cuid())
+  code         String  @db.VarChar(9)
+  createdAt    BigInt
+  updatedAt    BigInt
+  disabledAt   BigInt?
+  description  String?
+  socialReason String
+  fantasyName  String
+
+  taxIdentificationType String @default("CNPJ") // enum TaxIdentificationEnum
+
+  taxIdentificationNumber     String @unique
+  taxIdentificationNumberHash String
+
+  phoneNumber     String @unique
+  phoneNumberHash String
+
+  email     String @unique
+  emailHash String
+
+  website       String?
+  logoUri       String?
+  industry      String // Setor ou indústria em que a empresa atua.
+  employeeCount Int? // Número de funcionários da empresa.
+  permissions   String[] // enum ParentCompanyPermission
+  utc           String? // enum UTCEnum
+
+  ManagementCompany   ManagementCompany @relation(fields: [managementCompanyId], references: [id])
+  managementCompanyId String
+
+  Addresses Address[]
+  Users     User[]
+
+  // Subsidiaries Subsidiary[]
+  // Customers    Customer[]
+  // User         User[]
+}
+
+model Address {
+  id           String  @id @default(cuid())
+  createdAt    BigInt
+  updatedAt    BigInt
+  name         String?
+  isActive     Boolean @default(true)
+  addressType  String // enum AddressEnum
+  street       String
+  number       String?
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  zipCode      String
+  country      String // Usar Class Country
+  latitude     Float?
+  longitude    Float?
+
+  ParentCompany   ParentCompany? @relation(fields: [parentCompanyId], references: [id])
+  parentCompanyId String?
+}
+
+// model Subsidiary {
+//   id            String    @id @default(cuid())
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
+//   disabledAt    DateTime?
+//   corporateName String
+//   tradingName   String
+//   cnpj          String    @unique
+//   phone         String?
+
+//   ParentCompany   ParentCompany @relation(fields: [parentCompanyId], references: [id])
+//   parentCompanyId String
+
+//   IntegrationApi   IntegrationApi @relation(fields: [integrationApiId], references: [id])
+//   integrationApiId String         @unique
+
+//   CustomerServices CustomerService[]
+//   Users            User[]
+//   Departments      Department[]
+// }
+
+// model IntegrationApi {
+//   id         String    @id @default(cuid())
+//   createdAt  DateTime  @default(now())
+//   updatedAt  DateTime  @updatedAt
+//   disabledAt DateTime?
+
+//   Subsidiary Subsidiary?
+
+//   Messengers MetaMessenger[]
+// }
+
+// model Department {
+//   id          String    @id @default(cuid())
+//   createdAt   DateTime  @default(now())
+//   updatedAt   DateTime  @updatedAt
+//   disabledAt  DateTime?
+//   name        String
+//   description String
+
+//   Subsidiary   Subsidiary @relation(fields: [subsidiaryId], references: [id])
+//   subsidiaryId String
+// }
+
+// model MetaMessenger {
+//   id     String @id @default(cuid())
+//   token  String
+//   pageId String
+
+//   IntegrationApi   IntegrationApi? @relation(fields: [integrationApiId], references: [id])
+//   integrationApiId String?
+// }
+
+// model Customer {
+//   id         String    @id @default(cuid())
+//   createdAt  DateTime  @default(now())
+//   updatedAt  DateTime  @updatedAt
+//   disabledAt DateTime?
+//   code       String
+//   cpf        String?
+//   email      String?
+//   firstName  String?
+//   lastName   String?
+//   birthday   String?
+//   avatarUri  String?
+
+//   messengerId String?
+//   whatsappId  String?
+//   instagramId String?
+
+//   ParentCompany   ParentCompany @relation(fields: [parentCompanyId], references: [id])
+//   parentCompanyId String
+
+//   CustomerServices CustomerService[]
+//   Addresses        CustomerAddress[]
+// }
+
+// model CustomerAddress {
+//   id           String      @id @default(cuid())
+//   createdAt    DateTime    @default(now())
+//   updatedAt    DateTime    @updatedAt
+//   name         String?
+//   isActive     Boolean     @default(true)
+//   addressType  AddressType @default(RESIDENTIAL)
+//   street       String
+//   number       String      @default("S/N")
+//   complement   String?
+//   neighborhood String
+//   city         String
+//   state        String
+//   zipCode      String
+//   country      String
+//   latitude     Float?
+//   longitude    Float?
+
+//   Customer   Customer @relation(fields: [customerId], references: [id])
+//   customerId String
+// }
+
+// model CustomerService {
+//   id               String          @id @default(cuid())
+//   code             Int             @default(autoincrement())
+//   provider         MessageProvider
+//   startedAt        DateTime?
+//   startedQueueAt   DateTime?
+//   startedServiceAt DateTime?
+//   closedAt         DateTime?
+
+//   Customer   Customer @relation(fields: [customerId], references: [id])
+//   customerId String
+
+//   Subsidiary   Subsidiary @relation(fields: [subsidiaryId], references: [id])
+//   subsidiaryId String
+
+//   Attendants User[]
+//   Messages   Message[]
+// }
+
+// model Message {
+//   id            String        @id @default(cuid())
+//   createdAt     DateTime      @default(now())
+//   updatedAt     DateTime      @updatedAt
+//   deletedAt     DateTime?
+//   sendBy        MessageSendBy
+//   integrationId String?
+//   type          MessageType
+//   text          String?
+//   url           String?
+
+//   status            MessageStatus @default(PROCESS)
+//   statusProcessAt   DateTime?
+//   statusSentAt      DateTime?
+//   statusDeliveredAt DateTime?
+//   statusReadAt      DateTime?
+//   statusErrorAt     DateTime?
+//   statusDeleteAt    DateTime?
+
+//   CustomerService   CustomerService @relation(fields: [customerServiceId], references: [id])
+//   customerServiceId String
+// }
+
+model User {
+  id          String  @id @default(cuid())
+  code        String  @db.VarChar(9)
+  createdAt   BigInt
+  updatedAt   BigInt
+  disabledAt  BigInt?
+  lastLoginAt BigInt?
+  type        String  @default("MANAGER") // enum ParentUserEnum
+  police      String  @default("NORMAL") // enum ParentUserPoliceEnum
+
+  username     String @unique
+  usernameHash String
+
+  email     String @unique
+  emailHash String
+
+  nationalId     String @unique
+  nationalIdHash String
+
+  phoneNumber     String? @unique
+  phoneNumberHash String?
+
+  passwordHash String
+
+  countryCode String
+  birthDate   BigInt?
+  firstName   String
+  lastName    String
+  avatarUri   String?
+  language    String   @default("PT_BR") // enum LanguageEnum
+  darkMode    Boolean  @default(false)
+  dateFormat  String   @default("DD-MM-YYYY HH:mm:ss") // enum DateFormatEnum
+  permissions String[] // enum ManagementUserPermissionEnum
+
+  isVerified           Boolean @default(false) // Para verificar se o usuário confirmou o e-mail ou completou a verificação.
+  verificationToken    String? //Para armazenar tokens de verificação de e-mail ou senha.
+  resetPasswordToken   String? //  Para armazenar tokens de redefinição de senha.
+  lastPasswordChangeAt BigInt? // Para rastrear quando a senha foi alterada pela última vez.
+  twoFactorEnabled     Boolean @default(false) // Para indicar se a autenticação de dois fatores está habilitada.
+
+  ParentCompany   ParentCompany @relation(fields: [parentCompanyId], references: [id])
+  parentCompanyId String
+
+  // Subsidiary   Subsidiary? @relation(fields: [subsidiaryId], references: [id])
+  // subsidiaryId String?
+
+  // CustomerServices CustomerService[]
+  // UserPermission   UserPermission[]
+}
+
+// model UserPermission {
+//   id String @id @default(cuid())
+
+//   User   User   @relation(fields: [userId], references: [id])
+//   userId String
+// }

@@ -1,0 +1,35 @@
+- Caso adicione mais opções de idioma, deve buscar por "Translations here" e adicionar a nova lingua em todos os arquivos.
+
+- REQUISITOS PARA CRIAR NOVA SENHA
+    Deve conter pelo menos um caractere especial (como !, @, #, etc.).
+    Deve conter pelo menos uma letra maiúscula.
+    Deve conter pelo menos uma letra minúscula.
+    Não deve conter três ou mais caracteres consecutivos iguais.
+    Deve ter entre 8 e 50 caracteres de comprimento.
+
+- NATIONAL ID
+    1. Portugal (PT_BR)
+    Identificador Nacional: Número de Identificação Fiscal (NIF) ou Número de Identificação de Pessoa Coletiva (NIPC) para empresas.
+    Formato: 9 dígitos.
+    2. Estados Unidos (EN_US)
+    Identificador Nacional: Social Security Number (SSN).
+    Formato: XXX-XX-XXXX (onde X é um dígito).
+    3. Espanha (ES_ES)
+    Identificador Nacional: Número de Identificación de Extranjero (NIE) para estrangeiros ou Número de Identificación Personal (NIP) para cidadãos.
+    Formato: 8 dígitos seguidos de uma letra (para NIE) ou número de 9 dígitos (para NIF).
+    4. França (FR_FR)
+    Identificador Nacional: Numéro de Sécurité Sociale (NIR).
+    Formato: 15 dígitos (exemplo: 1 84 12 75 123 456 78).
+    5. Alemanha (DE_DE)
+    Identificador Nacional: Steuerliche Identifikationsnummer (Steuer-ID).
+    Formato: 11 dígitos.
+    6. China (ZH_CN)
+    Identificador Nacional: Número de Identificação de Cidadão da China (China National ID).
+    Formato: 18 dígitos.
+    7. Japão (JA_JP)
+    Identificador Nacional: My Number (Número de Identificação Pessoal).
+    Formato: 12 dígitos.
+    8. Coreia do Sul (KO_KR)
+    Identificador Nacional: Resident Registration Number.
+    Formato: 13 dígitos (YYYYMMDD-SSSSSS).
+

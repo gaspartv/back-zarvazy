@@ -1,0 +1,5 @@
+export enum AddressEnum {
+  RESIDENTIAL = "RESIDENTIAL",
+  COMMERCIAL = "COMMERCIAL",
+  OTHER = "OTHER",
+}
