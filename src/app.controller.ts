@@ -1,21 +1,11 @@
-import { Get } from "@nestjs/common";
-import { LanguageEnum } from "./common/enums/language.enum";
-import { UTCEnum } from "./common/enums/utc.enum";
+import { Get, Render } from "@nestjs/common";
 import { RestController } from "./common/rest/rest-controller";
-import { Dayjs } from "./utils/dayjs.util";
 
-@RestController("seed")
+@RestController("")
 export class AppController {
-  @Get()
-  seed() {
-    const x = Dayjs.format(
-      UTCEnum.AMERICA_SAO_PAULO,
-      LanguageEnum.PT_BR,
-      new Date("2021-01-01T00:00:00Z"),
-    );
-
-    console.log(x);
-
-    return;
+  @Get("views")
+  @Render("index.hbs")
+  root() {
+    return { message: "Hello world!" };
   }
 }

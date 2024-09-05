@@ -14,7 +14,11 @@ const envSchema = z.object({
   RABBITMQ_RECEIVED: z.string(),
   SECURITY_ALGORITHM: z.string(),
   SECURITY_SECRET: z.string(),
+  SECURITY_SALT: z.coerce.number(),
   SALT_OR_ROUNDS: z.coerce.number(),
+  JWT_SECRET: z.string(),
+  REFRESH_TOKEN_EXPIRES_IN_DAYS: z.coerce.string(),
+  SESSION_EXPIRES_IN_DAYS: z.coerce.string(),
 
   SEED_MANAGEMENT_USER_PASSWORD: z.string(),
   SEED_MANAGEMENT_USER_USERNAME: z.string(),

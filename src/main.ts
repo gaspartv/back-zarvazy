@@ -4,6 +4,8 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from "@nestjs/platform-fastify";
+import handlebars from "handlebars";
+import { join } from "path";
 import { AppModule } from "./app.module";
 import { env } from "./config/env";
 import { Log } from "./config/log";
@@ -18,6 +20,12 @@ async function bootstrap() {
 
   app.enableCors({
     origin: "*",
+  });
+
+  app.useStaticAssets({ root: join(__dirname, "..", "..", "public") });
+  app.setViewEngine({
+    engine: { handlebars },
+    templates: join(__dirname, "..", "..", "views"),
   });
 
   app.connectMicroservice({

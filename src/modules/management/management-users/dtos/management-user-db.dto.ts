@@ -1,0 +1,34 @@
+export class ManagementUserDbDto {
+  id: string;
+  code: string;
+  createdAt: Date;
+  updatedAt: Date;
+  disabledAt: Date | null;
+  lastLoginAt: Date | null;
+  type: string;
+  police: string;
+  username: string;
+  usernameHash: string;
+  email: string;
+  emailHash: string;
+  nationalId: string;
+  nationalIdHash: string;
+  phoneNumber: string | null;
+  phoneNumberHash: string | null;
+  passwordHash: string;
+  countryCode: string;
+  birthDate: Date | null;
+  firstName: string;
+  lastName: string;
+  avatarUri: string | null;
+  language: string;
+  darkMode: boolean;
+  dateFormat: string;
+  permissions: string[];
+  isVerified: boolean;
+  verificationToken: string | null;
+  resetPasswordToken: string | null;
+  lastPasswordChangeAt: Date | null;
+  twoFactorEnabled: boolean;
+  managementCompanyId: string;
+}

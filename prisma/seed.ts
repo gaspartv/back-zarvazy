@@ -4,42 +4,41 @@ import { ManagementUserPoliceEnum } from "../src/common/enums/management/user-po
 import { ManagementUserTypeEnum } from "../src/common/enums/management/user-type.enum";
 import { TaxIdentificationEnum } from "../src/common/enums/tax-identification.enum";
 import { UTCEnum } from "../src/common/enums/utc.enum";
+import dayjs from "../src/config/dayjs";
 import { env } from "../src/config/env";
 import { Bcrypt } from "../src/utils/bcrypt.util";
 import { Crypto } from "../src/utils/crypto.util";
-import { Dayjs } from "../src/utils/dayjs.util";
 import { Generate } from "../src/utils/generate.util";
+import { Security } from "../src/utils/security.util";
 
 const prisma = new PrismaClient();
 
 const generateUserDate = async () => {
   return {
     code: Generate.code(),
-    createdAt: Dayjs.timestamp(),
-    updatedAt: Dayjs.timestamp(),
+    createdAt: dayjs().toDate(),
+    updatedAt: dayjs().toDate(),
     type: ManagementUserTypeEnum.OWNER,
     police: ManagementUserPoliceEnum.SUPER,
 
     username: Crypto.hash(env.SEED_MANAGEMENT_USER_USERNAME),
-    usernameHash: await new Bcrypt().hash(env.SEED_MANAGEMENT_USER_USERNAME),
+    usernameHash: Security.encrypt(env.SEED_MANAGEMENT_USER_USERNAME),
 
     email: Crypto.hash(env.SEED_MANAGEMENT_USER_EMAIL),
-    emailHash: await new Bcrypt().hash(env.SEED_MANAGEMENT_USER_EMAIL),
+    emailHash: Security.encrypt(env.SEED_MANAGEMENT_USER_EMAIL),
 
     nationalId: Crypto.hash(env.SEED_MANAGEMENT_USER_NATIONAL_ID),
-    nationalIdHash: await new Bcrypt().hash(
-      env.SEED_MANAGEMENT_USER_NATIONAL_ID,
-    ),
+    nationalIdHash: Security.encrypt(env.SEED_MANAGEMENT_USER_NATIONAL_ID),
 
     phoneNumber: Crypto.hash(env.SEED_MANAGEMENT_USER_PHONE_NUMBER),
-    phoneNumberHash: await new Bcrypt().hash(
-      env.SEED_MANAGEMENT_USER_PHONE_NUMBER,
-    ),
+    phoneNumberHash: Security.encrypt(env.SEED_MANAGEMENT_USER_PHONE_NUMBER),
 
-    passwordHash: await new Bcrypt().hash(env.SEED_MANAGEMENT_USER_PASSWORD),
+    passwordHash: await Bcrypt.hash(env.SEED_MANAGEMENT_USER_PASSWORD),
 
     countryCode: env.SEED_MANAGEMENT_USER_COUNTRY_CODE,
-    birthDate: Dayjs.timestamp(new Date(env.SEED_MANAGEMENT_USER_BIRTH_DATE)),
+    birthDate: dayjs(env.SEED_MANAGEMENT_USER_BIRTH_DATE)
+      .set("hour", 0)
+      .toDate(),
     firstName: env.SEED_MANAGEMENT_USER_FIRST_NAME,
     lastName: env.SEED_MANAGEMENT_USER_LAST_NAME,
     avatarUri: env.SEED_MANAGEMENT_USER_MANAGEMENT_AVATAR,
@@ -50,8 +49,8 @@ const generateUserDate = async () => {
 const generateParentCompanyData = async () => {
   return {
     code: Generate.code(),
-    createdAt: Dayjs.timestamp(),
-    updatedAt: Dayjs.timestamp(),
+    createdAt: dayjs().toDate(),
+    updatedAt: dayjs().toDate(),
     description: env.SEED_PARENT_COMPANY_DESCRIPTION,
     socialReason: env.SEED_PARENT_COMPANY_SOCIAL_REASON,
     fantasyName: env.SEED_PARENT_COMPANY_FANTASY_NAME,
@@ -60,17 +59,15 @@ const generateParentCompanyData = async () => {
     taxIdentificationNumber: Crypto.hash(
       env.SEED_PARENT_COMPANY_TAX_IDENTIFICATION_NUMBER,
     ),
-    taxIdentificationNumberHash: await new Bcrypt().hash(
+    taxIdentificationNumberHash: Security.encrypt(
       env.SEED_PARENT_COMPANY_TAX_IDENTIFICATION_NUMBER,
     ),
 
     email: Crypto.hash(env.SEED_PARENT_COMPANY_EMAIL),
-    emailHash: await new Bcrypt().hash(env.SEED_PARENT_COMPANY_EMAIL),
+    emailHash: Security.encrypt(env.SEED_PARENT_COMPANY_EMAIL),
 
     phoneNumber: Crypto.hash(env.SEED_PARENT_COMPANY_PHONE_NUMBER),
-    phoneNumberHash: await new Bcrypt().hash(
-      env.SEED_PARENT_COMPANY_PHONE_NUMBER,
-    ),
+    phoneNumberHash: Security.encrypt(env.SEED_PARENT_COMPANY_PHONE_NUMBER),
 
     website: env.SEED_PARENT_COMPANY_WEBSITE,
     logoUri: env.SEED_PARENT_COMPANY_LOGO_URI,
@@ -82,8 +79,8 @@ const generateParentCompanyData = async () => {
 
 const generateParentCompanyAddressData = () => {
   return {
-    createdAt: Dayjs.timestamp(),
-    updatedAt: Dayjs.timestamp(),
+    createdAt: dayjs().toDate(),
+    updatedAt: dayjs().toDate(),
     name: env.SEED_PARENT_COMPANY_ADDRESS_NAME,
     addressType: AddressEnum.COMMERCIAL,
     street: env.SEED_PARENT_COMPANY_ADDRESS_STREET,

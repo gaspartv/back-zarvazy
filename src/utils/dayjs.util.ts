@@ -4,14 +4,32 @@ import dayjs from "../config/dayjs";
 import { DateFormat } from "./date-format.util";
 
 export class Dayjs {
-  static format(utc: UTCEnum, language: LanguageEnum, date?: Date): string {
-    if (!date) date = new Date();
-    const dateFormat = DateFormat.formatFull(language);
-    return dayjs(date).tz(utc).format(dateFormat);
+  static now() {
+    return dayjs().toDate();
+  }
+
+  static format(utc: UTCEnum, date?: Date): string {
+    if (!date) date = dayjs().toDate();
+    return dayjs(date).tz(utc).format();
   }
 
   static timestamp(date?: Date) {
-    if (!date) date = new Date();
+    if (!date) date = dayjs().toDate();
     return dayjs(date).valueOf();
+  }
+
+  static toDate(
+    timestamp: bigint,
+    utc: UTCEnum,
+    language: LanguageEnum,
+    isBirthDate?: boolean,
+  ) {
+    const date = dayjs(Number(timestamp)).toDate();
+    let dateFormat: string;
+    if (isBirthDate) {
+      return dayjs(date).tz(utc).format(DateFormat.formatDate(language));
+    }
+    dateFormat = DateFormat.formatFull(language);
+    return dayjs(date).tz(utc).format(dateFormat);
   }
 }
